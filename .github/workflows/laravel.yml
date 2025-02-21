@@ -1,43 +1,30 @@
-name: Deploy Laravel Application
-
+name: Build and Deploy
 on:
-  push:
-    branches:
-      - main  # Change this to your default branch
+    push:
+        branches:
+            -   master
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.3'  # Change to your PHP version
-        extensions: mbstring, xml, bcmath, curl, zip, gd
-
-    - name: Install Composer dependencies
-      run: composer install --no-dev --optimize-autoloader
-
-    - name: Run database migrations
-      run: php artisan migrate --force
-
-    - name: Prepare deployment
-      run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
-        chmod 600 private_key
-
-    - name: Deploy to server
-      run: |
-        ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-          cd /home/kfskinpu/laravel.kfskinpusat.com
-          git pull origin main
-          composer install --no-dev --optimize-autoloader
-          php artisan migrate --force
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
-        EOF
+    build:
+        name: Build and Deploy
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout Repository
+                uses: actions/checkout@master
+            -   name: Setup Enviroment
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.3'
+            -   name: Speed up the packages installation process
+                run: composer global require hirak/prestissimo
+            -   name: Install Packages
+                run: composer install --no-dev
+            -   name: Deploy to Server
+                uses: ngocquyhoang/deploy@laravel
+                with:
+                    user:  ${{ secrets.SSH_PRIVATE_KEY }}
+                    host:  ${{ secrets.SERVER_IP }}
+                    path: /home/kfskinpu/laravel.kfskinpusat.com
+                    owner:  ${{ secrets.SERVER_USER }}
+                env:
+                    DEPLOY_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
