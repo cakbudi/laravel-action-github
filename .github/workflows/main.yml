@@ -11,6 +11,18 @@ jobs:
     - name: 🚚 Get latest code
       uses: actions/checkout@v4
 
+    - name: Create database
+      run: touch ./database/database.sqlite
+  
+    - name: Copy .env
+      run: cp .env.example .env
+      
+    - name: Install app
+      run: composer install
+ 
+    - name: Run migrations
+      run: php artisan migrate
+
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
