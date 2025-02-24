@@ -20,4 +20,16 @@ jobs:
         run: touch ./database/database.sqlite
   
       - name: Copy .env
-        run: cp .env.test .env
+        run: cp .env.example .env
+      
+      - name: Install app
+        run: composer install
+ 
+      - name: Run migrations
+        run: php artisan migrate
+ 
+      - name: Test PHPStan
+        run: ./vendor/bin/phpstan analyse
+
+      - name: Test PHPUnit
+        run: ./vendor/bin/phpunit
