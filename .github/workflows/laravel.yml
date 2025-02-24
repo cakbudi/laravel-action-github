@@ -7,11 +7,9 @@ jobs:
   run_pull:
     name: run pull
     runs-on: ubuntu-latest
-    
     steps:
       - name: connect and pull
         run: |
               ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}
               cd ${{ secrets.PATH }}
               git pull
-              exit
