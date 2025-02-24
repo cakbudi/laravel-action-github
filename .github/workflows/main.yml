@@ -27,3 +27,6 @@ jobs:
  
       - name: Run migrations
         run: php artisan migrate
+
+      - name: Test PHPUnit
+        run: ./vendor/bin/phpunit
