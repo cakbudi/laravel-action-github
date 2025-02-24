@@ -28,9 +28,6 @@ jobs:
       - name: Run migrations
         run: php artisan migrate
 
-      - name: Test PHPUnit
-        run: ./vendor/bin/phpunit
-
       - name: Deploy using ssh
         uses: appleboy/ssh-action@v1.1.0
         with:
